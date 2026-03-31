@@ -1,0 +1,176 @@
+{% extends 'recipes/base.html' %}
+{% block title %}{{ action }} Recipe — ForkFolio{% endblock %}
+{% block extra_css %}
+<style>
+    .form-page { max-width: 860px; margin: 3rem auto; padding: 0 2rem; }
+
+    .form-page h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-card h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-gray);
+        color: var(--terracotta);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .formset-item {
+        background: var(--cream);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 0.5rem;
+        align-items: end;
+    }
+
+    .formset-item.steps-item {
+        grid-template-columns: 1fr auto;
+    }
+
+    .formset-item label { font-size: 0.8rem; }
+
+    .formset-item input, .formset-item textarea {
+        padding: 0.5rem 0.75rem;
+        border: 1.5px solid var(--light-gray);
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        width: 100%;
+        background: white;
+    }
+
+    .formset-item input:focus, .formset-item textarea:focus {
+        outline: none;
+        border-color: var(--terracotta);
+    }
+
+    .delete-check { display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: #c62828; }
+
+    .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+
+    .management-form { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1>{{ action }} Recipe</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-card">
+            <h2>Basic Information</h2>
+            <div class="form-group">
+                <label>Recipe Title</label>
+                {{ form.title }}
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                {{ form.description }}
+            </div>
+            <div class="form-group">
+                <label>Photo</label>
+                {{ form.photo }}
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group">
+                    <label>Difficulty</label>
+                    {{ form.difficulty }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Prep Time (minutes)</label>
+                    {{ form.prep_time }}
+                </div>
+                <div class="form-group">
+                    <label>Cook Time (minutes)</label>
+                    {{ form.cook_time }}
+                </div>
+            </div>
+            <div class="form-group" style="max-width:200px;">
+                <label>Servings</label>
+                {{ form.servings }}
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>Ingredients</h2>
+            {{ ingredient_formset.management_form }}
+            {% for f in ingredient_formset %}
+            <div class="formset-item">
+                <div class="form-group">
+                    <label>Ingredient Name</label>
+                    {{ f.name }}
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    {{ f.quantity }}
+                </div>
+                <div class="form-group">
+                    <label>Unit</label>
+                    {{ f.unit }}
+                </div>
+                {% if f.DELETE %}
+                <div class="delete-check">
+                    {{ f.DELETE }} Remove
+                </div>
+                {% endif %}
+                {{ f.id }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-card">
+            <h2>Steps</h2>
+            {{ step_formset.management_form }}
+            {% for f in step_formset %}
+            <div class="formset-item steps-item">
+                <div class="form-group">
+                    <label>Step Instruction</label>
+                    <textarea name="{{ f.instruction.html_name }}" rows="2" placeholder="Describe this step...">{{ f.instruction.value|default:'' }}</textarea>
+                </div>
+                {% if f.DELETE %}
+                <div class="delete-check">
+                    {{ f.DELETE }} Remove
+                </div>
+                {% endif %}
+                {{ f.id }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ action }} Recipe</button>
+            <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

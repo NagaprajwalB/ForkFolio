@@ -1,0 +1,94 @@
+{% extends 'recipes/base.html' %}
+{% block title %}{{ profile_user.username }}'s Profile — ForkFolio{% endblock %}
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, var(--charcoal) 0%, #3d2b1f 100%);
+        padding: 3rem 2rem;
+        color: white;
+    }
+    .profile-header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    .avatar {
+        width: 90px;
+        height: 90px;
+        background: var(--terracotta);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        font-family: 'Playfair Display', serif;
+        color: white;
+        flex-shrink: 0;
+    }
+    .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+    .profile-info p { color: #aaa; font-size: 0.9rem; }
+    .profile-body { max-width: 1200px; margin: 2.5rem auto; padding: 0 2rem; }
+    .profile-body h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="profile-header-inner">
+        <div class="avatar">{{ profile_user.username|first|upper }}</div>
+        <div class="profile-info">
+            <h1>{{ profile_user.username }}</h1>
+            <p>Member since {{ profile_user.date_joined|date:"F Y" }} · {{ recipes|length }} recipe{{ recipes|length|pluralize }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="profile-body">
+    <h2>Recipes by {{ profile_user.username }}</h2>
+    {% if recipes %}
+    <div class="grid-3">
+        {% for recipe in recipes %}
+        <a href="{% url 'recipe_detail' recipe.slug %}" class="recipe-card">
+            {% if recipe.photo %}
+            <img src="{{ recipe.photo.url }}" alt="{{ recipe.title }}" class="recipe-card-img">
+            {% else %}
+            <div class="recipe-card-img">🍳</div>
+            {% endif %}
+            <div class="recipe-card-body">
+                <div class="recipe-card-title">{{ recipe.title }}</div>
+                <div class="recipe-card-meta">
+                    <span class="badge badge-{{ recipe.difficulty }}">{{ recipe.get_difficulty_display }}</span>
+                    <span>⏱ {{ recipe.total_time }} min</span>
+                    {% if recipe.average_rating > 0 %}
+                    <span class="stars">★ {{ recipe.average_rating }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:3rem; color:var(--mid-gray);">
+        <div style="font-size:3rem; margin-bottom:1rem;">🍽️</div>
+        <p>No recipes shared yet.</p>
+        {% if user == profile_user %}
+        <br>
+        <a href="{% url 'recipe_create' %}" class="btn btn-primary">Share Your First Recipe</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

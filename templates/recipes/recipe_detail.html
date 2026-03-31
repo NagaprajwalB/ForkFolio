@@ -1,0 +1,330 @@
+{% extends 'recipes/base.html' %}
+{% block title %}{{ recipe.title }} — ForkFolio{% endblock %}
+{% block extra_css %}
+<style>
+    .recipe-hero {
+        background: var(--charcoal);
+        color: white;
+        padding: 3rem 0 0;
+    }
+
+    .recipe-hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 3rem;
+        align-items: end;
+    }
+
+    .recipe-hero-info { padding-bottom: 2rem; }
+
+    .recipe-breadcrumb { font-size: 0.85rem; color: #888; margin-bottom: 1rem; }
+    .recipe-breadcrumb a { color: var(--terracotta); text-decoration: none; }
+
+    .recipe-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-weight: 900;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-meta-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-author { font-size: 0.9rem; color: #aaa; }
+    .recipe-author a { color: var(--terracotta); text-decoration: none; font-weight: 600; }
+
+    .recipe-hero-img {
+        border-radius: 16px 16px 0 0;
+        overflow: hidden;
+        height: 280px;
+    }
+
+    .recipe-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+    .recipe-hero-img .placeholder {
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, #3d3d3d, #2a2a2a);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 5rem;
+    }
+
+    /* BODY */
+    .recipe-body {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 2.5rem;
+    }
+
+    .recipe-main {}
+
+    .recipe-sidebar {}
+
+    /* STATS */
+    .stats-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--terracotta); }
+    .stat-label { font-size: 0.75rem; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* INGREDIENTS */
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-gray);
+    }
+
+    .ingredient-list { list-style: none; }
+
+    .ingredient-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--cream);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ingredient-list li::before {
+        content: '•';
+        color: var(--terracotta);
+        font-weight: bold;
+    }
+
+    /* STEPS */
+    .step-item {
+        display: flex;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--terracotta);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .step-text { padding-top: 0.4rem; line-height: 1.6; }
+
+    /* RATINGS */
+    .rating-summary {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .rating-big { font-size: 3rem; font-weight: 900; color: var(--charcoal); }
+    .rating-stars { color: var(--gold); font-size: 1.5rem; }
+    .rating-count { font-size: 0.85rem; color: var(--mid-gray); }
+
+    .review-item {
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1rem 0;
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-user { font-weight: 600; font-size: 0.9rem; }
+    .review-score { color: var(--gold); font-size: 0.9rem; }
+    .review-date { font-size: 0.8rem; color: var(--mid-gray); }
+    .review-text { font-size: 0.9rem; line-height: 1.5; color: var(--mid-gray); }
+
+    .rating-form { margin-top: 1.5rem; }
+    .rating-form h4 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+
+    .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+
+    @media (max-width: 768px) {
+        .recipe-hero-inner { grid-template-columns: 1fr; }
+        .recipe-hero-img { display: none; }
+        .recipe-body { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recipe-hero">
+    <div class="recipe-hero-inner">
+        <div class="recipe-hero-info">
+            <div class="recipe-breadcrumb">
+                <a href="{% url 'home' %}">Home</a> › <a href="{% url 'recipe_list' %}">Recipes</a> › {{ recipe.title }}
+            </div>
+            <h1 class="recipe-title">{{ recipe.title }}</h1>
+            <div class="recipe-meta-row">
+                <span class="badge badge-{{ recipe.difficulty }}">{{ recipe.get_difficulty_display }}</span>
+                {% if recipe.category %}<span style="color:#aaa; font-size:0.9rem;">{{ recipe.category.icon }} {{ recipe.category.name }}</span>{% endif %}
+                {% if recipe.average_rating > 0 %}
+                <span style="color:var(--gold);">★ {{ recipe.average_rating }} ({{ recipe.rating_count }} ratings)</span>
+                {% endif %}
+            </div>
+            <p class="recipe-author">by <a href="{% url 'profile' recipe.author.username %}">{{ recipe.author.username }}</a> · {{ recipe.created_at|date:"M j, Y" }}</p>
+            {% if user == recipe.author %}
+            <div class="actions">
+                <a href="{% url 'recipe_edit' recipe.slug %}" class="btn btn-secondary">Edit</a>
+                <a href="{% url 'recipe_delete' recipe.slug %}" class="btn btn-danger">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="recipe-hero-img">
+            {% if recipe.photo %}
+            <img src="{{ recipe.photo.url }}" alt="{{ recipe.title }}">
+            {% else %}
+            <div class="placeholder">🍳</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="recipe-body">
+    <div class="recipe-main">
+        <div class="card">
+            <h3>About this Recipe</h3>
+            <p style="line-height:1.7; color:var(--mid-gray);">{{ recipe.description }}</p>
+        </div>
+
+        {% if recipe.steps.all %}
+        <div class="card">
+            <h3>Instructions</h3>
+            {% for step in recipe.steps.all %}
+            <div class="step-item">
+                <div class="step-num">{{ step.order }}</div>
+                <div class="step-text">{{ step.instruction }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- RATINGS SECTION -->
+        <div class="card">
+            <h3>Ratings & Reviews</h3>
+
+            {% if recipe.rating_count > 0 %}
+            <div class="rating-summary">
+                <div class="rating-big">{{ recipe.average_rating }}</div>
+                <div>
+                    <div class="rating-stars">
+                        {% for i in "12345" %}★{% endfor %}
+                    </div>
+                    <div class="rating-count">{{ recipe.rating_count }} review{{ recipe.rating_count|pluralize }}</div>
+                </div>
+            </div>
+
+            {% for rating in ratings %}
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-user">{{ rating.user.username }}</span>
+                    <span class="review-score">
+                        {% for i in "12345" %}{% if forloop.counter <= rating.score %}★{% else %}☆{% endif %}{% endfor %}
+                    </span>
+                    <span class="review-date">{{ rating.created_at|date:"M j, Y" }}</span>
+                </div>
+                {% if rating.review %}
+                <div class="review-text">{{ rating.review }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--mid-gray); font-size:0.9rem;">No reviews yet. Be the first to rate this recipe!</p>
+            {% endif %}
+
+            {% if user.is_authenticated and user != recipe.author %}
+            <div class="rating-form">
+                <h4>{% if user_rating %}Update your review{% else %}Leave a Review{% endif %}</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in rating_form %}
+                    <div class="form-group">
+                        <label>{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">
+                        {% if user_rating %}Update Review{% else %}Submit Review{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% elif not user.is_authenticated %}
+            <p style="margin-top:1rem; font-size:0.9rem;">
+                <a href="{% url 'login' %}" style="color:var(--terracotta); font-weight:600;">Login</a> to leave a review.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="recipe-sidebar">
+        <div class="stats-card">
+            <div class="stat-item">
+                <div class="stat-value">{{ recipe.prep_time }}</div>
+                <div class="stat-label">Prep (min)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ recipe.cook_time }}</div>
+                <div class="stat-label">Cook (min)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ recipe.total_time }}</div>
+                <div class="stat-label">Total (min)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ recipe.servings }}</div>
+                <div class="stat-label">Servings</div>
+            </div>
+        </div>
+
+        {% if recipe.ingredients.all %}
+        <div class="card">
+            <h3>Ingredients</h3>
+            <ul class="ingredient-list">
+                {% for ing in recipe.ingredients.all %}
+                <li>{{ ing.quantity }} {{ ing.unit }} {{ ing.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

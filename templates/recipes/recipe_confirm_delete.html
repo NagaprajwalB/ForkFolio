@@ -1,0 +1,18 @@
+{% extends 'recipes/base.html' %}
+{% block title %}Delete Recipe — ForkFolio{% endblock %}
+{% block content %}
+<div style="max-width:500px; margin:5rem auto; padding:0 2rem; text-align:center;">
+    <div style="background:white; border-radius:16px; padding:2.5rem; box-shadow:var(--shadow);">
+        <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
+        <h1 style="font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; margin-bottom:0.75rem;">Delete Recipe?</h1>
+        <p style="color:var(--mid-gray); margin-bottom:2rem;">
+            Are you sure you want to delete <strong>"{{ recipe.title }}"</strong>? This action cannot be undone.
+        </p>
+        <form method="post" style="display:flex; gap:1rem; justify-content:center;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'recipe_detail' recipe.slug %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

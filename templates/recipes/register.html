@@ -1,0 +1,26 @@
+{% extends 'recipes/base.html' %}
+{% block title %}Sign Up — ForkFolio{% endblock %}
+{% block content %}
+<div style="max-width:480px; margin:4rem auto; padding:0 2rem;">
+    <div style="background:white; border-radius:16px; padding:2.5rem; box-shadow:var(--shadow);">
+        <h1 style="font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; margin-bottom:0.5rem;">Join ForkFolio</h1>
+        <p style="color:var(--mid-gray); margin-bottom:2rem; font-size:0.9rem;">Create an account to share your recipes</p>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <div style="color:#c62828; font-size:0.8rem; margin-top:0.3rem;">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
+        </form>
+        <p style="margin-top:1.5rem; text-align:center; font-size:0.9rem; color:var(--mid-gray);">
+            Already have an account? <a href="{% url 'login' %}" style="color:var(--terracotta); font-weight:600;">Log in</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
